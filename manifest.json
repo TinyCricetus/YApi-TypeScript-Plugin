@@ -1,0 +1,10 @@
+{
+  "manifest_version": 3,
+  "name": "ChromePlugin",
+  "description": "仓鼠的某个 Chrome 插件",
+  "version": "1.0",
+  "action": {
+    "default_popup": "main.html",
+    "default_icon": "favicon.jpg"
+  }
+}
