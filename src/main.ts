@@ -191,28 +191,3 @@ function main() {
 }
 
 main()
-
-interface Struct {
-	code: string
-	data: {
-		/** 用户标识 */
-		id: number
-		/** 用户类型 1物流公司，2工厂，3货物代理公司，4司机，5其他 */
-		userType: number
-		/** 名称 用户姓名 */
-		userName: string
-		/** 手机号码 */
-		mobileNumber: string
-		/** 用户角色 1老板，2调度，3操作，4司机 */
-		userRole: number
-		/** 账户类型 1主账号，2子账号 */
-		accountType: number
-		/** 用户状态 1已注册，2入驻中，3已入驻，4入驻失败 */
-		status: number
-		/** token */
-		token: string
-		/** token 过期时间 */
-		expiresAt: number
-	}
-	msg: string
-}
