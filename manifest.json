@@ -3,8 +3,20 @@
   "name": "ChromePlugin",
   "description": "仓鼠的某个 Chrome 插件",
   "version": "1.0",
-  "action": {
-    "default_popup": "main.html",
-    "default_icon": "favicon.jpg"
+  "content_scripts": [
+    {
+      "js": [
+        "bundle.js"
+      ],
+      "matches": [
+        "https://api.zaitugongda.com/*"
+      ]
+    }
+  ],
+  "icons": {
+    "32": "icons/32.png",
+    "72": "icons/72.png",
+    "128": "icons/128.png",
+    "512": "icons/512.png"
   }
 }
