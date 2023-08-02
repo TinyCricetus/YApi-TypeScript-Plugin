@@ -136,7 +136,7 @@ function generateDeclaration() {
 
     // 加入注释
     const strList = str.split('\n')
-    let finalStr = ''
+    let finalStr = 'interface Struct '
     for (const s of strList) {
       let temp = s
       const matchResult = s.match(/\d+\+/)
@@ -145,7 +145,7 @@ function generateDeclaration() {
         temp = temp.replace(targetStr, '')
 
         const index = Number(targetStr.replace('+', ''))        
-        const comment = list[index]?.description || ''
+        const comment = list.find(l => l.id === index)?.description || ''
 
         const nbspResult = temp.match(/·/g)
         const nbspCount = nbspResult?.length || 0
@@ -155,11 +155,19 @@ function generateDeclaration() {
         }
       }
 
-      finalStr += temp + '\n\n'
+      finalStr += temp + '\n'
     }
 
     display.innerText = finalStr
     tableBody.appendChild(display)
+
+    const copyButton = document.createElement('button')
+    tableBody.appendChild(copyButton)
+    copyButton.innerText = '复制接口声明'
+    copyButton.addEventListener('click', event => {
+      event.stopPropagation()
+      navigator.clipboard.writeText(finalStr.replaceAll('··', '\t'))
+    })
   })
 }
 
@@ -183,3 +191,28 @@ function main() {
 }
 
 main()
+
+interface Struct {
+	code: string
+	data: {
+		/** 用户标识 */
+		id: number
+		/** 用户类型 1物流公司，2工厂，3货物代理公司，4司机，5其他 */
+		userType: number
+		/** 名称 用户姓名 */
+		userName: string
+		/** 手机号码 */
+		mobileNumber: string
+		/** 用户角色 1老板，2调度，3操作，4司机 */
+		userRole: number
+		/** 账户类型 1主账号，2子账号 */
+		accountType: number
+		/** 用户状态 1已注册，2入驻中，3已入驻，4入驻失败 */
+		status: number
+		/** token */
+		token: string
+		/** token 过期时间 */
+		expiresAt: number
+	}
+	msg: string
+}
