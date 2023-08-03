@@ -1,6 +1,7 @@
 import './main.css'
 
 const PLUGIN_SIGN = 'plugin'
+const COPY_SIGN = 'copy'
 
 interface Variant {
   name: string
@@ -66,7 +67,7 @@ function generateDeclaration() {
       return
     }
 
-    if (tableBody.lastElementChild?.id === PLUGIN_SIGN) {
+    while (tableBody.lastElementChild && [PLUGIN_SIGN, COPY_SIGN].includes(tableBody.lastElementChild.id)) {
       tableBody.lastElementChild.remove()
     }
 
@@ -131,7 +132,7 @@ function generateDeclaration() {
     display.id = PLUGIN_SIGN
 
     const result = parseVariant(topVariant)
-    let str = JSON.stringify(result, null, '··')
+    let str = JSON.stringify(result, null, '&nbsp;')
     str = str.replace(/[",]/g, '')
 
     // 加入注释
@@ -147,21 +148,22 @@ function generateDeclaration() {
         const index = Number(targetStr.replace('+', ''))        
         const comment = list.find(l => l.id === index)?.description || ''
 
-        const nbspResult = temp.match(/·/g)
+        const nbspResult = temp.match(/&nbsp;/g)
         const nbspCount = nbspResult?.length || 0
 
         if (comment) {
-          finalStr += `${Array.from({length: nbspCount}).map(_ => '·').join('')}/** ${comment} */` + '\n'
+          finalStr += `<span>${Array.from({length: nbspCount}).map(_ => '&nbsp;').join('')}/** ${comment} */</span><br>`
         }
       }
 
-      finalStr += temp + '\n'
+      finalStr += `<span>${temp}</span><br>`
     }
 
-    display.innerText = finalStr
+    display.innerHTML = finalStr
     tableBody.appendChild(display)
 
     const copyButton = document.createElement('button')
+    copyButton.id = COPY_SIGN
     tableBody.appendChild(copyButton)
     copyButton.innerText = '复制接口声明'
     copyButton.addEventListener('click', event => {
