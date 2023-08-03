@@ -164,8 +164,9 @@ function generateDeclaration() {
 
     const copyButton = document.createElement('button')
     copyButton.id = COPY_SIGN
+    copyButton.className = "copy-button"
     tableBody.appendChild(copyButton)
-    copyButton.innerText = '复制接口声明'
+    copyButton.innerText = '复制'
     copyButton.addEventListener('click', event => {
       event.stopPropagation()
       navigator.clipboard.writeText(finalStr.replaceAll('··', '\t'))
@@ -176,7 +177,7 @@ function generateDeclaration() {
 function createSwitch() {
   const button = document.createElement('div')
   button.className = 'plugin-button'
-  button.innerText = '接口声明'
+  button.innerText = '生成接口声明'
 
   return button
 }
