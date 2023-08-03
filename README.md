@@ -1,7 +1,7 @@
 # YApi-TypeScript-Plugin
 
 该插件为 YApi 页面的 Chrome 插件，用于为数据自动生成 TS 的接口声明，效果如下图所示：
-![https://github.com/TinyCricetus/YApi-TypeScript-Plugin/blob/main/images/1.png]()
+![示例](./images/1.png)
 
 ## 使用说明
 先克隆本项目至本地，然后按照以下操作步骤进行使用：
