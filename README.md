@@ -11,7 +11,6 @@
 ```sh
 pnpm install
 ```
-
 ### 作用域修改
 Chrome 的插件需要指定可运行的目前网页，修改方式为：
 1. 找到目录下 **manifest.json** 配置文件；

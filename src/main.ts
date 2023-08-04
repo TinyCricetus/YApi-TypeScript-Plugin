@@ -138,6 +138,7 @@ function generateDeclaration() {
     // 加入注释
     const strList = str.split('\n')
     let finalStr = 'interface Struct '
+    let copyStr = 'interface Struct '
     for (const s of strList) {
       let temp = s
       const matchResult = s.match(/\d+\+/)
@@ -150,13 +151,16 @@ function generateDeclaration() {
 
         const nbspResult = temp.match(/&nbsp;/g)
         const nbspCount = nbspResult?.length || 0
+        const nbsp = Array.from({length: nbspCount}).map(_ => '&nbsp;').join('')
 
         if (comment) {
-          finalStr += `<span>${Array.from({length: nbspCount}).map(_ => '&nbsp;').join('')}/** ${comment} */</span><br>`
+          finalStr += `<span>${nbsp}/** ${comment} */</span><br>`
+          copyStr += `${nbsp}/** ${comment} */\n`
         }
       }
 
       finalStr += `<span>${temp}</span><br>`
+      copyStr += temp + '\n'
     }
 
     display.innerHTML = finalStr
@@ -169,10 +173,10 @@ function generateDeclaration() {
     copyButton.innerText = '复制'
     copyButton.addEventListener('click', event => {
       event.stopPropagation()
-      navigator.clipboard.writeText(finalStr.replaceAll('··', '\t'))
+      navigator.clipboard.writeText(copyStr.replace(/&nbsp;/g, ''))
     })
   })
-}
+} 
 
 function createSwitch() {
   const button = document.createElement('div')
@@ -194,3 +198,4 @@ function main() {
 }
 
 main()
+  
