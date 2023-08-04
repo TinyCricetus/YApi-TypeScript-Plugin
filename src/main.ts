@@ -82,10 +82,11 @@ function generateDeclaration() {
         }
       }
 
+      const require = text[2] === '必须'
       const variant: Variant = {
-        name: order + '+' + text[0],
+        name: order + '+' + text[0] + (require ? '' : '?'),
         type: text[1],
-        require: text[2] === '必须',
+        require,
         description: text[4] || '',
         level: parseElementLevel(tr as HTMLElement),
         properties: [],
