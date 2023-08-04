@@ -98,22 +98,22 @@ function generateDeclaration() {
     }
 
     let beforeLevel = 0
-    let properties: Variant[] = []
-      ;[...list].reverse().forEach(variant => {
-        if (!properties.length && variant.level === 0) {
-          beforeLevel = variant.level
-          return
-        }
-
-        if (beforeLevel - variant.level > 0) {
-          variant.properties = properties.reverse()
-          properties = []
-        } else {
-          properties.push(variant)
-        }
-
+    let properties: Variant[] = [];
+    [...list].reverse().forEach(variant => {
+      if (!properties.length && variant.level === 0) {
         beforeLevel = variant.level
-      })
+        return
+      }
+
+      if (beforeLevel - variant.level > 0) {
+        variant.properties = properties.reverse()
+        properties = []
+      } else {
+        properties.push(variant)
+      }
+
+      beforeLevel = variant.level
+    })
 
     const finalList = list.filter(item => !item.level)
 
@@ -127,7 +127,6 @@ function generateDeclaration() {
       id: 0
     }
 
-    
     const display = document.createElement('pre')
     display.className = 'declare'
     display.id = PLUGIN_SIGN
@@ -147,12 +146,12 @@ function generateDeclaration() {
         const targetStr = matchResult[0]
         temp = temp.replace(targetStr, '')
 
-        const index = Number(targetStr.replace('+', ''))        
+        const index = Number(targetStr.replace('+', ''))
         const comment = list.find(l => l.id === index)?.description || ''
 
         const nbspResult = temp.match(/&nbsp;/g)
         const nbspCount = nbspResult?.length || 0
-        const nbsp = Array.from({length: nbspCount}).map(_ => '&nbsp;').join('')
+        const nbsp = Array.from({ length: nbspCount }).map(_ => '&nbsp;').join('')
 
         if (comment) {
           finalStr += `<span>${nbsp}/** ${comment} */</span><br>`
@@ -177,7 +176,7 @@ function generateDeclaration() {
       navigator.clipboard.writeText(copyStr.replace(/&nbsp;/g, ''))
     })
   })
-} 
+}
 
 function createSwitch() {
   const button = document.createElement('div')
@@ -199,4 +198,3 @@ function main() {
 }
 
 main()
-  
