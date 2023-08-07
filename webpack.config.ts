@@ -1,13 +1,12 @@
 import path from 'path'
 import webpack from 'webpack'
-import HtmlWebpackPlugin from 'html-webpack-plugin'
 import CopyPlugin from "copy-webpack-plugin"
 
 const config: webpack.Configuration = {
   mode: 'development',
   devtool: 'inline-source-map',
 
-  entry: './src/main.ts',
+  entry: './src/index.ts',
 
   output: {
     path: path.resolve(__dirname, './dist'),
@@ -34,10 +33,6 @@ const config: webpack.Configuration = {
   },
 
   plugins: [
-    new HtmlWebpackPlugin({
-      template: './public/index.html',
-      favicon: './public/favicon.jpg'
-    }),
     new CopyPlugin({
       patterns: [
         { from: "./manifest.json", to: "./" },
