@@ -5,15 +5,14 @@
 
 ## 先决条件
 
-[Node 18.16.0](https://nodejs.org/en)
-
-Node 自带了 npm 包管理工具，如果想使用 **pnpm** 管理，需要全局安装：
+- [Node 18.16.0](https://nodejs.org/en)
+- Node 自带了 npm 包管理工具，如果想使用 **pnpm** 管理，需要全局安装：
 ```sh
 npm install -g pnpm
 ```
 
 ## 使用说明
-先克隆本项目至本地，然后按照以下操作步骤进行使用：
+先克隆本项目至本地，然后按照以下操作步骤进行使用。
 
 ### 安装依赖
 克隆本项目至本地后，使用以下命令安装依赖：
@@ -26,10 +25,10 @@ pnpm install
 ### 作用域修改
 Chrome 的插件需要指定可运行的目前网页，修改方式为：
 1. 找到目录下 **manifest.json** 配置文件；
-2. 修改 **matches** 配置字段中的页面链接匹配，以匹配需要作用的域名。
-3. 修改 main.ts 中的 api 请求前缀 **API_PREFIX**
+2. 修改 **matches** 配置字段中的页面链接匹配，以匹配需要作用的域名;
+3. 修改 main.ts 中的 api 请求前缀 **API_PREFIX** 。
 
-例如：需要把插件用于页面 https://www.test.com 需要做出如下修改：
+例如：需要把插件用于页面 www.test.com 需要做出如下修改：
 ```json
 // manifest.json
 // 使用通配符 * 来匹配该页面下的所有路径。
