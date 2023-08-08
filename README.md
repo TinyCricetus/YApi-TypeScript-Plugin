@@ -5,8 +5,8 @@
 
 ## 先决条件
 
-- [Node 18.16.0](https://nodejs.org/en)
-- Node 自带了 npm 包管理工具，如果想使用 **pnpm** 管理，需要全局安装：
+- [node 18.16.0](https://nodejs.org/en)
+- node 自带了 **npm** 包管理工具，如果想使用 **pnpm** 管理，需要全局安装：
 ```sh
 npm install -g pnpm
 ```

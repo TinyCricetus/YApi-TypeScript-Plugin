@@ -49,6 +49,8 @@ function transform(data: ApiInfoResponse['data']) {
 
 function main() {
   let panelVisible = false
+  let requestCode = ''
+  let responseCode = ''
 
   const pluginButton = createDiv({
     text: 'Declaration',
@@ -57,7 +59,11 @@ function main() {
       event.stopPropagation()
       const info = await requestApiInfo() as ApiInfoResponse
       if (info.data) {
-        updateCodePanelInnerHtml(transform(info.data))
+        const [_requestCode, _responseCode] = transform(info.data)
+        requestCode = _requestCode
+        responseCode = _responseCode
+
+        updateCodePanelInnerHtml([_requestCode, _responseCode])
       }
 
       updatePanelVisible()
@@ -65,12 +71,32 @@ function main() {
   })
 
   const codePanel = createDiv({ class: 'code-panel' })
+  const copyButtonStyle = {
+    position: 'absolute',
+    top: '10px',
+    right: '10px',
+    width: '90px'
+  }
+  const requestCopy = createDiv({
+    text: '复制请求',
+    style: copyButtonStyle,
+    class: 'plugin-button',
+    onClick: () => window.navigator.clipboard.writeText(requestCode)
+  })
+  const responseCopy = createDiv({
+    text: '复制响应',
+    style: {
+      ...copyButtonStyle,
+      top: '50px'
+    },
+    class: 'plugin-button',
+    onClick: () => window.navigator.clipboard.writeText(responseCode)
+  })
+
   const codeContainer = createDiv({
     class: 'code-container',
-    children: [codePanel],
-    onClick: (event) => {
-      event.stopPropagation()
-    }
+    children: [codePanel, requestCopy, responseCopy],
+    onClick: (event) => event.stopPropagation()
   })
 
   window.addEventListener('click', () => updatePanelVisible(false))

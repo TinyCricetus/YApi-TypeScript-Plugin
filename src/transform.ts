@@ -1,5 +1,6 @@
 import {
   EmitHint,
+  InterfaceDeclaration,
   NewLineKind,
   PropertySignature,
   ScriptKind,
@@ -9,7 +10,9 @@ import {
   addSyntheticLeadingComment,
   createPrinter,
   createSourceFile,
-  factory
+  factory,
+  isInterfaceDeclaration,
+  isPropertySignature
 } from 'typescript'
 
 export interface YApiBody {
@@ -48,11 +51,11 @@ export function transformByYApiBody(source: YApiBody, name = 'Struct') {
 
 export function makeInterface(source: YApiBody, name: string) {
 
-  const generateRecursive = (source: YApiBody, name: string, isRequired = false): PropertySignature => {
+  const generateRecursive = (source: YApiBody, name: string, isRequired = false, isTop = false) => {
     const requiredMap: Record<string, boolean> = {}
     source.required?.forEach(key => (requiredMap[key] = true))
 
-    let node: PropertySignature
+    let node: PropertySignature | InterfaceDeclaration
     if (source.type === 'array') {
       if (source.items?.properties) {
         const properties = source.items.properties
@@ -61,7 +64,10 @@ export function makeInterface(source: YApiBody, name: string) {
 
         for (const key of keys) {
           const value = properties[key]
-          typeNodes.push(generateRecursive(value, key, requiredMap[key]))
+          const node = generateRecursive(value, key, requiredMap[key])
+          if (isPropertySignature(node)) {
+            typeNodes.push(node)
+          }
         }
 
         node = createPropertySignature(
@@ -82,14 +88,21 @@ export function makeInterface(source: YApiBody, name: string) {
 
       for (const key of keys) {
         const value = source.properties[key]
-        typeNodes.push(generateRecursive(value, key, requiredMap[key]))
+        const node = generateRecursive(value, key, requiredMap[key])
+        if (isPropertySignature(node)) {
+          typeNodes.push(node)
+        }
       }
 
-      node = createPropertySignature(
-        name,
-        isRequired,
-        factory.createTypeLiteralNode(typeNodes)
-      )
+      if (isTop) {
+        node = createInterfaceDeclaration(name, typeNodes)
+      } else {
+        node = createPropertySignature(
+          name,
+          isRequired,
+          factory.createTypeLiteralNode(typeNodes)
+        )
+      }
     } else {
       node = createPropertySignature(
         name,
@@ -105,7 +118,29 @@ export function makeInterface(source: YApiBody, name: string) {
     return node
   }
 
-  return generateRecursive(source, name, true)
+  const result = generateRecursive(source, name, true, true)
+
+  if (isPropertySignature(result)) {
+    return factory.createInterfaceDeclaration(
+      [factory.createToken(SyntaxKind.ExportKeyword)],
+      name,
+      undefined,
+      undefined,
+      [result]
+    )
+  }
+
+  return result
+}
+
+function createInterfaceDeclaration(name: string, childNodes: PropertySignature[]) {
+  return factory.createInterfaceDeclaration(
+    [factory.createToken(SyntaxKind.ExportKeyword)],
+    factory.createIdentifier(name),
+    undefined,
+    undefined,
+    childNodes
+  )
 }
 
 function createPropertySignature(name: string, isRequired: boolean, childNode: TypeNode) {
