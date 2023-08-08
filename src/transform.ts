@@ -36,10 +36,10 @@ export function transformByYApiBody(source: YApiBody) {
     ScriptKind.TS
   )
 
-  const printer = createPrinter({ newLine: NewLineKind.LineFeed, omitTrailingSemicolon: true })
+  const printer = createPrinter({ newLine: NewLineKind.LineFeed })
   const signature = makeInterface(source)
 
-  return printer.printNode(EmitHint.Unspecified, signature, resultFile)
+  return printer.printNode(EmitHint.Unspecified, signature, resultFile).replace(/;/g, '')
 }
 
 export function makeInterface(source: YApiBody) {
@@ -71,7 +71,7 @@ export function makeInterface(source: YApiBody) {
           undefined,
           factory.createIdentifier(name),
           isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
-          factory.createArrayTypeNode(factory.createKeywordTypeNode(parseType(source.type)))
+          factory.createArrayTypeNode(factory.createKeywordTypeNode(parseSimpleType(source.type)))
         )
       }
     } else if (source.type === 'object' && source.properties) {
@@ -94,7 +94,7 @@ export function makeInterface(source: YApiBody) {
         undefined,
         factory.createIdentifier(name),
         isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
-        factory.createKeywordTypeNode(parseType(source.type))
+        factory.createKeywordTypeNode(parseSimpleType(source.type))
       )
     }
 
@@ -108,7 +108,7 @@ export function makeInterface(source: YApiBody) {
   return generateRecursive(source, 'Struct', true)
 }
 
-function parseType(type: string) {
+function parseSimpleType(type: string) {
   switch (type) {
     case 'string':
       return SyntaxKind.StringKeyword
