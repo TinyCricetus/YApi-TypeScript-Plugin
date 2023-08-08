@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "YApi-TypeScript-Plugin",
+  "name": "DeclarationGenerator",
   "description": "YApi 页面的 TypeScript 接口声明插件",
   "version": "1.0",
   "content_scripts": [

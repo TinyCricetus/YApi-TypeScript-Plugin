@@ -6,7 +6,7 @@ const config: webpack.Configuration = {
   mode: 'development',
   devtool: 'inline-source-map',
 
-  entry: './src/index.ts',
+  entry: './src/main.ts',
 
   output: {
     path: path.resolve(__dirname, './dist'),
