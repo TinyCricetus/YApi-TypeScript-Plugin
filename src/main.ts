@@ -53,7 +53,7 @@ function main() {
   let responseCode = ''
 
   const pluginButton = createDiv({
-    text: 'Declaration',
+    text: '声明解析',
     class: 'plugin-button',
     onClick: async (event) => {
       event.stopPropagation()
