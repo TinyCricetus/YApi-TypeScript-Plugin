@@ -1,6 +1,11 @@
 import { createDiv } from './dom'
 import './main.css'
 import { transformByYApiBody } from './transform'
+import Highlight from 'highlight.js/lib/core'
+import hightTypescript from 'highlight.js/lib/languages/typescript'
+import 'highlight.js/styles/github.css'
+
+Highlight.registerLanguage('typescript', hightTypescript)
 
 const API_PREFIX = 'https://api.zaitugongda.com/api/interface/get?id='
 
@@ -34,26 +39,65 @@ async function requestApiInfo() {
 }
 
 function transform(data: ApiInfoResponse['data']) {
-  const requestBody = JSON.parse(data.req_body_other)
-  console.log('request:', transformByYApiBody(requestBody))
-
-  const responseBody = JSON.parse(data.res_body)
-  console.log('response:', transformByYApiBody(responseBody))
+  const requestBody = JSON.parse(data.req_body_other || '{}')
+  const responseBody = JSON.parse(data.res_body || '{}')
+  return [
+    transformByYApiBody(requestBody, 'Request'),
+    transformByYApiBody(responseBody, 'Response')
+  ]
 }
 
 function main() {
-  const container = createDiv({
+  let panelVisible = false
+
+  const pluginButton = createDiv({
     text: 'Declaration',
     class: 'plugin-button',
-    onClick: async () => {
+    onClick: async (event) => {
+      event.stopPropagation()
       const info = await requestApiInfo() as ApiInfoResponse
       if (info.data) {
-        transform(info.data)
+        updateCodePanelInnerHtml(transform(info.data))
       }
+
+      updatePanelVisible()
     }
   })
 
-  document.body.appendChild(container)
+  const codePanel = createDiv({ class: 'code-panel' })
+  const codeContainer = createDiv({
+    class: 'code-container',
+    children: [codePanel],
+    onClick: (event) => {
+      event.stopPropagation()
+    }
+  })
+
+  window.addEventListener('click', () => updatePanelVisible(false))
+
+  function updatePanelVisible(newVisible = !panelVisible) {
+    panelVisible = newVisible
+    const fixedRight = panelVisible ? '0px' : '-100%'
+    codeContainer.style.right = fixedRight
+  }
+
+  function updateCodePanelInnerHtml(textList: string[]) {
+    let innerHtml = ''
+    textList.forEach(text => {
+      innerHtml += '<pre>' +
+        Highlight.highlight(
+          text,
+          { language: 'typescript' }
+        ).value +
+        '</pre>'
+    })
+
+    codePanel.innerHTML = innerHtml
+  }
+
+  ;[pluginButton, codeContainer].forEach(el => {
+    document.body.appendChild(el)
+  })
 }
 
 main()

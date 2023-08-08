@@ -5,6 +5,7 @@ import {
   ScriptKind,
   ScriptTarget,
   SyntaxKind,
+  TypeNode,
   addSyntheticLeadingComment,
   createPrinter,
   createSourceFile,
@@ -26,8 +27,11 @@ export interface YApiBody {
   }
 }
 
-export function transformByYApiBody(source: YApiBody) {
-  console.log('source:', source)
+export function transformByYApiBody(source: YApiBody, name = 'Struct') {
+  if (!source.type) {
+    return ''
+  }
+
   const resultFile = createSourceFile(
     "someFileName.ts",
     "",
@@ -37,12 +41,12 @@ export function transformByYApiBody(source: YApiBody) {
   )
 
   const printer = createPrinter({ newLine: NewLineKind.LineFeed })
-  const signature = makeInterface(source)
+  const signature = makeInterface(source, name)
 
   return printer.printNode(EmitHint.Unspecified, signature, resultFile).replace(/;/g, '')
 }
 
-export function makeInterface(source: YApiBody) {
+export function makeInterface(source: YApiBody, name: string) {
 
   const generateRecursive = (source: YApiBody, name: string, isRequired = false): PropertySignature => {
     const requiredMap: Record<string, boolean> = {}
@@ -54,23 +58,21 @@ export function makeInterface(source: YApiBody) {
         const properties = source.items.properties
         const keys = Object.keys(properties)
         const typeNodes: PropertySignature[] = []
-  
+
         for (const key of keys) {
           const value = properties[key]
           typeNodes.push(generateRecursive(value, key, requiredMap[key]))
         }
-  
-        node = factory.createPropertySignature(
-          undefined,
-          factory.createIdentifier(name),
-          isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
+
+        node = createPropertySignature(
+          name,
+          isRequired,
           factory.createArrayTypeNode(factory.createTypeLiteralNode(typeNodes))
         )
       } else {
-        node = factory.createPropertySignature(
-          undefined,
-          factory.createIdentifier(name),
-          isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
+        node = createPropertySignature(
+          name,
+          isRequired,
           factory.createArrayTypeNode(factory.createKeywordTypeNode(parseSimpleType(source.type)))
         )
       }
@@ -83,17 +85,15 @@ export function makeInterface(source: YApiBody) {
         typeNodes.push(generateRecursive(value, key, requiredMap[key]))
       }
 
-      node = factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier(name),
-        isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
+      node = createPropertySignature(
+        name,
+        isRequired,
         factory.createTypeLiteralNode(typeNodes)
       )
     } else {
-      node = factory.createPropertySignature(
-        undefined,
-        factory.createIdentifier(name),
-        isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
+      node = createPropertySignature(
+        name,
+        isRequired,
         factory.createKeywordTypeNode(parseSimpleType(source.type))
       )
     }
@@ -105,7 +105,16 @@ export function makeInterface(source: YApiBody) {
     return node
   }
 
-  return generateRecursive(source, 'Struct', true)
+  return generateRecursive(source, name, true)
+}
+
+function createPropertySignature(name: string, isRequired: boolean, childNode: TypeNode) {
+  return factory.createPropertySignature(
+    undefined,
+    factory.createIdentifier(name),
+    isRequired ? undefined : factory.createToken(SyntaxKind.QuestionToken),
+    childNode
+  )
 }
 
 function parseSimpleType(type: string) {

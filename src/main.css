@@ -14,8 +14,10 @@ html {
 }
 
 .plugin-button {
+  user-select: none;
   cursor: pointer;
   position: fixed;
+  z-index: 5;
   bottom: 50px;
   right: 50px;
   width: 110px;
@@ -35,6 +37,7 @@ html {
 .plugin-button:hover {
   background-color: var(--button-bg-color-hover);
   color: var(--button-color-hover);
+  box-shadow: 1px 1px 5px gray, -1px -1px 5px gray;
 }
 
 .declare {
@@ -64,4 +67,29 @@ html {
 .copy-button:hover {
   background-color: var(--button-bg-color-hover);
   color: var(--button-color-hover);
+}
+
+.code-container {
+  box-sizing: border-box;
+  position: fixed;
+  z-index: 3;
+  opacity: 0.8;
+  right: -100%;
+  top: 0px;
+  height: 100%;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: white;
+  overflow: auto;
+  box-shadow: 1px 1px 5px gray, -1px -1px 5px gray;
+
+  transition-property: right;
+  transition-duration: 0.3s;
+  transition-timing-function: ease-in-out;
+}
+
+.code-panel {
+  min-height: 100%;
+  min-width: 300px;
+  max-width: 500px;
 }
