@@ -81,7 +81,7 @@ export function makeInterface(source: YApiBody, name: string, desertTop = false)
           }
         }
 
-        const newInterfaceName = name[0].toUpperCase() + name.substring(1)
+        const newInterfaceName = formatInterfaceName(name)
         const newInterface = createInterfaceDeclaration(newInterfaceName, typeNodes)
         declarations.push(newInterface)
 
@@ -120,7 +120,7 @@ export function makeInterface(source: YApiBody, name: string, desertTop = false)
           declarations.push(node)
         }
       } else {
-        const newInterfaceName = name[0].toUpperCase() + name.substring(1)
+        const newInterfaceName = formatInterfaceName(name)
         const newInterface = createInterfaceDeclaration(newInterfaceName, typeNodes)
         declarations.push(newInterface)
 
@@ -151,18 +151,15 @@ export function makeInterface(source: YApiBody, name: string, desertTop = false)
   const result = generateRecursive(source, name, true, true, desertTop)
 
   if (isPropertySignature(result)) {
-    const newInterface = factory.createInterfaceDeclaration(
-      [factory.createToken(SyntaxKind.ExportKeyword)],
-      name,
-      undefined,
-      undefined,
-      [result]
-    )
-
+    const newInterface = createInterfaceDeclaration(name, [result])
     declarations.push(newInterface)
   }
 
   return declarations
+}
+
+function formatInterfaceName(name: string) {
+  return name[0].toUpperCase() + name.substring(1)
 }
 
 function createInterfaceDeclaration(name: string, childNodes: PropertySignature[]) {

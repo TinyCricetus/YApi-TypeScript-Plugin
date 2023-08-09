@@ -30,7 +30,7 @@ function parseApiUrlFromPathname() {
   return API_PREFIX + apiNumber
 }
 
-async function requestApiInfo() {
+async function requestApiInfo(): Promise<ApiInfoResponse> {
   const requestUrl = parseApiUrlFromPathname()
   const response = await window.fetch(requestUrl)
   const data = await response.json()
@@ -57,7 +57,7 @@ function main() {
     class: 'plugin-button',
     onClick: async (event) => {
       event.stopPropagation()
-      const info = await requestApiInfo() as ApiInfoResponse
+      const info = await requestApiInfo()
       if (info.data) {
         const [_requestCode, _responseCode] = transform(info.data)
         requestCode = _requestCode
@@ -114,8 +114,7 @@ function main() {
         Highlight.highlight(
           text,
           { language: 'typescript' }
-        ).value +
-        '</pre>'
+        ).value + '</pre>'
     })
 
     codePanel.innerHTML = innerHtml
