@@ -82,14 +82,7 @@ export function makeInterface(source: YApiBody, name: string, desertTop = false)
         }
 
         const newInterfaceName = name[0].toUpperCase() + name.substring(1)
-        const newInterface = factory.createInterfaceDeclaration(
-          [factory.createToken(SyntaxKind.ExportKeyword)],
-          factory.createIdentifier(newInterfaceName),
-          undefined,
-          undefined,
-          typeNodes
-        )
-
+        const newInterface = createInterfaceDeclaration(newInterfaceName, typeNodes)
         declarations.push(newInterface)
 
         node = createPropertySignature(
@@ -128,14 +121,7 @@ export function makeInterface(source: YApiBody, name: string, desertTop = false)
         }
       } else {
         const newInterfaceName = name[0].toUpperCase() + name.substring(1)
-        const newInterface = factory.createInterfaceDeclaration(
-          [factory.createToken(SyntaxKind.ExportKeyword)],
-          factory.createIdentifier(newInterfaceName),
-          undefined,
-          undefined,
-          typeNodes
-        )
-
+        const newInterface = createInterfaceDeclaration(newInterfaceName, typeNodes)
         declarations.push(newInterface)
 
         node = createPropertySignature(
