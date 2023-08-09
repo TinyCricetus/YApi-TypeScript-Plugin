@@ -42,8 +42,8 @@ function transform(data: ApiInfoResponse['data']) {
   const requestBody = JSON.parse(data.req_body_other || '{}')
   const responseBody = JSON.parse(data.res_body || '{}')
   return [
-    transformByYApiBody(requestBody, 'Request'),
-    transformByYApiBody(responseBody, 'Response')
+    transformByYApiBody(requestBody, 'Request', false),
+    transformByYApiBody(responseBody, 'Response', true)
   ]
 }
 

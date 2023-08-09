@@ -11,7 +11,6 @@ import {
   createPrinter,
   createSourceFile,
   factory,
-  isInterfaceDeclaration,
   isPropertySignature
 } from 'typescript'
 
@@ -30,7 +29,7 @@ export interface YApiBody {
   }
 }
 
-export function transformByYApiBody(source: YApiBody, name = 'Struct') {
+export function transformByYApiBody(source: YApiBody, name = 'Struct', desertTop = false) {
   if (!source.type) {
     return ''
   }
@@ -44,14 +43,26 @@ export function transformByYApiBody(source: YApiBody, name = 'Struct') {
   )
 
   const printer = createPrinter({ newLine: NewLineKind.LineFeed })
-  const signature = makeInterface(source, name)
+  const declarations = makeInterface(source, name, desertTop)
 
-  return printer.printNode(EmitHint.Unspecified, signature, resultFile).replace(/;/g, '')
+  let printString = ''
+  declarations.forEach(declaration => {
+    printString += printer.printNode(EmitHint.Unspecified, declaration, resultFile).replace(/;/g, '') + '\n'
+  })
+
+  return printString
 }
 
-export function makeInterface(source: YApiBody, name: string) {
+export function makeInterface(source: YApiBody, name: string, desertTop = false) {
+  const declarations: InterfaceDeclaration[] = []
 
-  const generateRecursive = (source: YApiBody, name: string, isRequired = false, isTop = false) => {
+  const generateRecursive = (
+    source: YApiBody,
+    name: string,
+    isRequired = false,
+    isTop = false,
+    desertTop = false
+  ) => {
     const requiredMap: Record<string, boolean> = {}
     source.required?.forEach(key => (requiredMap[key] = true))
 
@@ -70,10 +81,26 @@ export function makeInterface(source: YApiBody, name: string) {
           }
         }
 
+        const newInterfaceName = name[0].toUpperCase() + name.substring(1)
+        const newInterface = factory.createInterfaceDeclaration(
+          [factory.createToken(SyntaxKind.ExportKeyword)],
+          factory.createIdentifier(newInterfaceName),
+          undefined,
+          undefined,
+          typeNodes
+        )
+
+        declarations.push(newInterface)
+
         node = createPropertySignature(
           name,
           isRequired,
-          factory.createArrayTypeNode(factory.createTypeLiteralNode(typeNodes))
+          factory.createArrayTypeNode(
+            factory.createTypeReferenceNode(
+              factory.createIdentifier(newInterfaceName),
+              undefined
+            )
+          )
         )
       } else {
         node = createPropertySignature(
@@ -96,11 +123,28 @@ export function makeInterface(source: YApiBody, name: string) {
 
       if (isTop) {
         node = createInterfaceDeclaration(name, typeNodes)
+        if (!desertTop) {
+          declarations.push(node)
+        }
       } else {
+        const newInterfaceName = name[0].toUpperCase() + name.substring(1)
+        const newInterface = factory.createInterfaceDeclaration(
+          [factory.createToken(SyntaxKind.ExportKeyword)],
+          factory.createIdentifier(newInterfaceName),
+          undefined,
+          undefined,
+          typeNodes
+        )
+
+        declarations.push(newInterface)
+
         node = createPropertySignature(
           name,
           isRequired,
-          factory.createTypeLiteralNode(typeNodes)
+          factory.createTypeReferenceNode(
+            factory.createIdentifier(newInterfaceName),
+            undefined
+          )
         )
       }
     } else {
@@ -118,19 +162,21 @@ export function makeInterface(source: YApiBody, name: string) {
     return node
   }
 
-  const result = generateRecursive(source, name, true, true)
+  const result = generateRecursive(source, name, true, true, desertTop)
 
   if (isPropertySignature(result)) {
-    return factory.createInterfaceDeclaration(
+    const newInterface = factory.createInterfaceDeclaration(
       [factory.createToken(SyntaxKind.ExportKeyword)],
       name,
       undefined,
       undefined,
       [result]
     )
+
+    declarations.push(newInterface)
   }
 
-  return result
+  return declarations
 }
 
 function createInterfaceDeclaration(name: string, childNodes: PropertySignature[]) {
