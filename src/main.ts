@@ -1,9 +1,9 @@
-import { createDiv } from './dom'
-import './main.css'
-import { transformByYApiBody } from './transform'
+import { createDiv } from './core/dom'
+import { transformByYApiBody } from './core'
 import Highlight from 'highlight.js/lib/core'
 import hightTypescript from 'highlight.js/lib/languages/typescript'
 import 'highlight.js/styles/github.css'
+import './main.css'
 
 Highlight.registerLanguage('typescript', hightTypescript)
 

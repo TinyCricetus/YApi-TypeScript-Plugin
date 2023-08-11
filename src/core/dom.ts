@@ -1,4 +1,3 @@
-
 export interface HTMLDivProps {
   id?: string
   class?: string
