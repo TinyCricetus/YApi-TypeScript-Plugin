@@ -49,6 +49,8 @@ function transform(data: ApiInfoResponse['data']) {
 
 function main() {
   let panelVisible = false
+
+  // 这两个变量用于一键复制
   let requestCode = ''
   let responseCode = ''
 
@@ -57,13 +59,21 @@ function main() {
     class: 'plugin-button',
     onClick: async (event) => {
       event.stopPropagation()
+      if (panelVisible) {
+        updatePanelVisible()
+        return
+      }
+
       const info = await requestApiInfo()
       if (info.data) {
         const [_requestCode, _responseCode] = transform(info.data)
         requestCode = _requestCode
         responseCode = _responseCode
 
-        updateCodePanelInnerHtml([_requestCode, _responseCode])
+        updateCodePanelInnerHtml([
+          '\n// ------ Request Interface ------\n' + _requestCode,
+          '\n// ------ Response Interface ------\n' + _responseCode
+        ])
       }
 
       updatePanelVisible()

@@ -50,6 +50,10 @@ export function transformByYApiBody(source: YApiBody, name = 'Struct', desertTop
     printString += printer.printNode(EmitHint.Unspecified, declaration, resultFile).replace(/;/g, '') + '\n'
   })
 
+  // 注释优化
+  printString = printString.replace(/\/\*/g, '/** ')
+  printString = printString.replace(/\*\//g, ' */')
+
   return printString
 }
 
