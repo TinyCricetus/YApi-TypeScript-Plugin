@@ -190,6 +190,7 @@ function parseSimpleType(type: string) {
     case 'string':
       return SyntaxKind.StringKeyword
 
+    case 'integer':
     case 'number':
       return SyntaxKind.NumberKeyword
 
