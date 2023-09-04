@@ -19,6 +19,7 @@ export interface YApiBody {
 
   required?: string[]
   title?: string
+  description?: string
 
   /** type === 'array' */
   items?: YApiBody
@@ -145,8 +146,9 @@ export function makeInterface(source: YApiBody, name: string, desertTop = false)
       )
     }
 
-    if (source.title) {
-      addSyntheticLeadingComment(node, SyntaxKind.MultiLineCommentTrivia, source.title, true)
+    const comment = source.title || source.description
+    if (comment) {
+      addSyntheticLeadingComment(node, SyntaxKind.MultiLineCommentTrivia, comment, true)
     }
 
     return node
